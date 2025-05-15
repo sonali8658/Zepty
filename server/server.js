@@ -1,12 +1,16 @@
-// server/server.js
-const express = require("express");
-const app = express();
-const port = 3000;
+const dotenv = require('dotenv');
+dotenv.config({ path: `${__dirname}/config.env` });
+const sequelize = require("./utils/database");
+const app = require('./app');
+const PORT = process.env.PORT || 3002;
 
-app.get("/", (req, res) => {
-  res.send("Hello from the server!");
-});
-
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+app.listen(PORT, async () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    try {
+        await sequelize.authenticate();
+        console.log("✅ Database connected");
+        await sequelize.sync();
+    } catch (error) {
+        console.error("❌ Database connection failed:", error);
+    }
 });
